@@ -7,7 +7,7 @@ export const routes: Routes = [
     },
     {
         path: 'movies',
-        loadComponent: () => import('./features/movies/movies'),
+        loadComponent: () => import('./features/movies/presentation/pages/movies/movies'),
     },
     {
         path: '**',

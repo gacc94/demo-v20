@@ -1,5 +1,4 @@
-GET /3/movie/popular?language=en-US&page=1 HTTP/1.1
+GET /3/movie/popular?language=en-US&page=1&region=us HTTP/1.1
 Accept: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5ZGVmNmVhMzhkYzYwMzQwYmRjNTc4NzJlNzQwMDIxYyIsIm5iZiI6MTY2NTc2MjkyMy40MjU5OTk5LCJzdWIiOiI2MzQ5ODY2YmIwNDYwNTAwODE2NjNiMWYiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.BV38AQ2604fpxPDiFyUt01U4VjUXDBSxZWduqV8JYJA
 Host: api.themoviedb.org
-
