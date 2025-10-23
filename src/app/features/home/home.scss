@@ -1,0 +1,23 @@
+@use "@angular/material" as mat;
+
+mat-toolbar {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+mat-list {
+    display: flex;
+    gap: 1rem;
+
+    mat-list-item {
+        border: 1px solid var(--mat-sys-surface);
+        padding: 1rem;
+        width: auto;
+        cursor: pointer;
+
+        & span {
+            color: var(--mat-sys-on-surface) !important;
+        }
+    }
+}
