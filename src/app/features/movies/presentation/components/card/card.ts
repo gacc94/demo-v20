@@ -1,14 +1,15 @@
 import { MaterialModule } from '@/app/shared/utils/material.module';
 import { Component, input } from '@angular/core';
 import { Movie } from '../../../infrastructure/interfaces/movie.interface';
+import { ImagePosterPipe } from '@/app/shared/pipes/image-poster-pipe';
 
 @Component({
     selector: 'app-card',
-    imports: [MaterialModule],
+    imports: [MaterialModule, ImagePosterPipe],
     template: `
         @let movie = $movie();
         <mat-card>
-            <img matCardImage [src]="'https://image.tmdb.org/t/p/w500' + movie.poster_path" />
+            <img matCardImage [src]="movie.poster_path | imagePoster: 'w500'" [alt]="movie.title" loading="lazy" />
             <mat-card-content>
                 <mat-card-title>{{ movie.title }}</mat-card-title>
                 <mat-card-subtitle>{{ movie.release_date }}</mat-card-subtitle>
