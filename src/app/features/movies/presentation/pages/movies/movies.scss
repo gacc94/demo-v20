@@ -16,11 +16,57 @@
     }
 
     &__grid {
-        max-width: 1200px;
+        max-width: 1000px;
         margin-inline: auto;
         padding: 1rem;
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
         gap: 1rem;
     }
+
+    &__swiper {
+        max-width: 1000px;
+        margin-inline: auto;
+        padding: 1rem;
+
+        &-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+    }
+}
+
+.mySwiper {
+    width: 100%;
+    height: 100%;
+
+    swiper-slide {
+        border-radius: 1rem;
+        overflow: hidden;
+        transition: transform 0.3s ease-in-out;
+
+        img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .swiper-horizontal .swiper-button-prev {
+            color: var(--mat-sys-primary);
+            background-color: var(--mat-sys-primary);
+            border-radius: 50%;
+            height: 1rem !important;
+            width: 1rem !important;
+        }
+    }
+}
+
+.swiper-horizontal .swiper-button-prev {
+    color: var(--mat-sys-on-primary);
+    background-color: var(--mat-sys-primary);
+    border-radius: 50%;
+    height: 1rem !important;
+    width: 1rem !important;
 }

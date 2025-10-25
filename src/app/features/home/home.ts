@@ -4,9 +4,9 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 
 @Component({
-    selector: 'app-home',
-    imports: [MaterialModule, CommonModule, RouterModule],
-    template: `
+	selector: 'app-home',
+	imports: [MaterialModule, CommonModule, RouterModule],
+	template: `
         <mat-toolbar>
             <span>Demo Angular v20</span>
 
@@ -17,14 +17,14 @@ import { Router, RouterModule } from '@angular/router';
             </mat-list>
         </mat-toolbar>
     `,
-    styleUrl: './home.scss',
+	styleUrl: './home.scss',
 })
 export default class Home {
-    #router = inject(Router);
-    items = ['movies', 'pokemon'];
+	#router = inject(Router);
+	items = ['movies', 'pokemon'];
 
-    navigateTo(item: string) {
-        const urlTree = this.#router.createUrlTree([item]);
-        this.#router.navigateByUrl(urlTree.toString());
-    }
+	navigateTo(item: string) {
+		const urlTree = this.#router.createUrlTree([item]);
+		this.#router.navigateByUrl(urlTree.toString());
+	}
 }

@@ -9,9 +9,9 @@ import { PokemonApi } from '../../sevices/pokemon-api';
 import { Card } from '../../components/card/card';
 
 @Component({
-    selector: 'app-list-pokemon',
-    imports: [ReactiveFormsModule, MatInputModule, MatFormFieldModule, MatIconModule, MatButtonModule],
-    template: `
+	selector: 'app-list-pokemon',
+	imports: [ReactiveFormsModule, MatInputModule, MatFormFieldModule, MatIconModule, MatButtonModule],
+	template: `
         <section>
             <mat-form-field appearance="outline">
                 <mat-label>Search Pokemon </mat-label>
@@ -27,10 +27,10 @@ import { Card } from '../../components/card/card';
         }
     </section> -->
     `,
-    styleUrl: './list-pokemon.scss',
+	styleUrl: './list-pokemon.scss',
 })
 export default class ListPokemon {
-    #pokemonApi = inject(PokemonApi);
+	#pokemonApi = inject(PokemonApi);
 
-    $pokemonRes = this.#pokemonApi.getAll();
+	$pokemonRes = this.#pokemonApi.getAll();
 }

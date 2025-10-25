@@ -4,9 +4,9 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
-    selector: 'app-card',
-    imports: [MatCardModule, MatButtonModule],
-    template: `
+	selector: 'app-card',
+	imports: [MatCardModule, MatButtonModule],
+	template: `
         <mat-card class="example-card" appearance="outlined">
             <mat-card-header>
                 <div mat-card-avatar class="example-header-image"></div>
@@ -27,12 +27,12 @@ import { MatButtonModule } from '@angular/material/button';
             </mat-card-actions>
         </mat-card>
     `,
-    styleUrl: './card.scss',
+	styleUrl: './card.scss',
 })
 export class Card {
-    $pokemon = input.required<Pokemon>({ alias: 'pokemon' });
+	$pokemon = input.required<Pokemon>({ alias: 'pokemon' });
 
-    getImage(url: string) {
-        return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${url}`;
-    }
+	getImage(url: string) {
+		return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${url}`;
+	}
 }
