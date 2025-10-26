@@ -1,11 +1,12 @@
 import { environment } from '@/environments/environment';
-import { httpResource } from '@angular/common/http';
-import type { MoviePopular, Movie } from '../interfaces/movie.interface';
+import { HttpClient, httpResource } from '@angular/common/http';
+import { inject, type Signal } from '@angular/core';
 import type { MovieApiPort } from '../../domain/port/movie-api.port';
-import type { Signal } from '@angular/core';
+import type { Movie, MoviePopular } from '../interfaces/movie.interface';
 
 export class MovieApi implements MovieApiPort {
 	#apiUrl = environment.apis['moviedb'];
+	#http = inject(HttpClient);
 
 	getPopulars(page: Signal<number>) {
 		return httpResource<MoviePopular>(() => ({
@@ -31,5 +32,16 @@ export class MovieApi implements MovieApiPort {
 			// 	region: 'US',
 			// },
 		}));
+	}
+
+	getPopularsPage(page: number) {
+		return this.#http.get<MoviePopular>(`${this.#apiUrl.endpoints['popular']}`, {
+			headers: { Authorization: `Bearer ${this.#apiUrl.apiKey}` },
+			params: {
+				language: 'en-US',
+				page: page,
+				region: 'US',
+			},
+		});
 	}
 }

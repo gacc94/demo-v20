@@ -64,3 +64,44 @@ body {
         )
     );
 }
+
+
+
+// ::view-transition-old(root) {
+//     animation: slide-out 0.5s ease-out forwards;
+// }
+
+// ::view-transition-new(root) {
+//     animation: slide-in 0.5s ease-out forwards;
+// }
+
+// @keyframes slide-out {
+//     from {
+//         transform: translateX(0);
+//     }
+//     to {
+//         transform: translateX(-100%);
+//     }
+// }
+
+// @keyframes slide-in {
+//     from {
+//         transform: translateX(100%);
+//     }
+//     to {
+//         transform: translateX(0);
+//     }
+// }
+// ::view-transition-new(root) {
+//     /* La magia está en 'clip-path' */
+//     animation: reveal 0.6s ease-in-out forwards;
+// }
+
+// @keyframes reveal {
+//     from {
+//         clip-path: circle(0% at 50% 50%); /* Empieza como un círculo de tamaño 0 en el centro */
+//     }
+//     to {
+//         clip-path: circle(150% at 50% 50%); /* Termina como un círculo que cubre toda la pantalla */
+//     }
+// }

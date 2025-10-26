@@ -1,70 +1,45 @@
-import { Component, input, inject, linkedSignal } from '@angular/core';
-import { MOVIEDB_HTTP } from '../../../infrastructure/providers/movie.provider';
+import { ImagePosterPipe } from '@/app/shared/pipes/image-poster-pipe';
+import { TransitionNamePipe } from '@/app/shared/pipes/transition-name-pipe';
+import { MaterialModule } from '@/app/shared/utils/material.module';
+import { Component, inject, input, linkedSignal } from '@angular/core';
+import { RouterModule } from '@angular/router';
+import { MoviesStore } from '../../../infrastructure/stores/movies.store';
 
 @Component({
 	selector: 'app-movie',
-	imports: [],
+	imports: [ImagePosterPipe, TransitionNamePipe, MaterialModule, RouterModule],
 	template: `
         @let movieId = $movieId();
-        @let movieResource = $movieResource();
+        @let movie = $movie();
+         <mat-toolbar>
+            <button mat-icon-button routerLink="/movies">
+                <mat-icon class="mat-24">arrow_back</mat-icon>
+            </button>
+            <span>{{ movie?.title }}</span>
+        </mat-toolbar>
+
         <section class="section">
+
             <div class="movie-header">
                 <h1 class="movie-title">Movie Details</h1>
                 <p class="movie-id">ID: {{ movieId }}</p>
             </div>
 
-            <!-- @if (movieResource.isLoading()) {
-                <div class="loading-state">
-                    <p>Loading movie details...</p>
-                </div>
-            } @else if (movieResource.value(); as movie) {
-                    <div class="movie-content">
-                        <div class="movie-poster">
-                            @if (movie.poster_path) {
-                                <img [src]="'https://image.tmdb.org/t/p/w500' + movie.poster_path"
-                                     [alt]="movie.title + ' poster'"
-                                     class="poster-image" />
-                            }
-                        </div>
-                        <div class="movie-details">
-                            <h2 class="movie-title">{{ movie.title }}</h2>
-                            @if (movie.original_title !== movie.title) {
-                                <p class="movie-original-title">Original: {{ movie.original_title }}</p>
-                            }
-                            <p class="movie-overview">{{ movie.overview }}</p>
-                            <div class="movie-meta">
-                                <span class="movie-year">{{ movie.release_date | date:'yyyy' }}</span>
-                                <span class="movie-rating">★ {{ movie.vote_average }}/10</span>
-                                <span class="movie-votes">({{ movie.vote_count }} votes)</span>
-                            </div>
-                            <div class="movie-additional">
-                                <span class="movie-language">{{ movie.original_language | uppercase }}</span>
-                                @if (movie.adult) {
-                                    <span class="movie-adult">Adult</span>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                } @else if (movieResource.error()) {
-                    <div class="error-state">
-                        <p>Error loading movie: {{ movieResource.error() }}</p>
-                    </div>
-                }
-            } @else {
-                <div class="waiting-state">
-                    <p>Waiting for movie ID...</p>
-                </div>
-            } -->
+            @if (movie) {
+                <img
+                    [src]="movie?.backdrop_path | imagePoster: 'w500'"
+                    [alt]="movie?.title" class="poster-image"
+                    [style.view-transition-name]="movie.title | transitionName: movie.id.toString()"
+                />
+            }
+
         </section>
     `,
 	styleUrl: './movie.scss',
 })
 export default class Movie {
-	#moviedbApi = inject(MOVIEDB_HTTP);
 	$movieId = input.required<number>({ alias: 'id' });
+	readonly store = inject(MoviesStore);
 
-	$movieResource = linkedSignal({
-		source: () => this.$movieId,
-		computation: (id) => this.#moviedbApi.getMovieById(id),
-	});
+	$movie = linkedSignal(() => this.store.movieById(this.$movieId()));
 }
