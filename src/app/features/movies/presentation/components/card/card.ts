@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 import { ImagePosterPipe } from '@/app/shared/pipes/image-poster-pipe';
@@ -11,7 +11,7 @@ import type { Movie } from '../../../infrastructure/interfaces/movie.interface';
 	imports: [MaterialModule, ImagePosterPipe, RouterModule, TransitionNamePipe],
 	template: `
         @let movie = $movie();
-        <mat-card routerLink="/movies/{{ movie.id }}">
+        <mat-card (click)="onMovieId.emit(movie.id)">
             <img matCardImage
                 [src]="movie.poster_path | imagePoster: 'w500'"
                 [alt]="movie.title" loading="lazy"
@@ -28,4 +28,6 @@ import type { Movie } from '../../../infrastructure/interfaces/movie.interface';
 })
 export class Card {
 	$movie = input.required<Movie>({ alias: 'movie' });
+
+	onMovieId = output<number>({ alias: 'movieId' });
 }

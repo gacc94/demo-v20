@@ -1,4 +1,4 @@
-export interface MoviePopular {
+export interface MovieResponse {
 	page: number;
 	results: Movie[];
 	total_pages: number;

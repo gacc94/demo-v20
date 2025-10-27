@@ -25,6 +25,11 @@
 			"indentWidth": 2
 		}
 	},
+	"css": {
+		"formatter": {
+			"indentWidth": 4
+		}
+	},
 	"assist": {
 		"enabled": true,
 		"actions": {

@@ -1,18 +1,20 @@
-import { CommonModule } from '@angular/common';
-import { type AfterViewInit, Component, CUSTOM_ELEMENTS_SCHEMA, type ElementRef, inject, viewChild } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
 
 import { ImagePosterPipe } from '@/app/shared/pipes/image-poster-pipe';
 import { MaterialModule } from '@/app/shared/utils/material.module';
-import type { SwiperContainer } from 'swiper/element';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
 import { MoviesStore } from '../../../infrastructure/stores/movies.store';
 import { Card } from '../../components/card/card';
+import { Carrousel } from '../../components/carrousel/carrousel';
 
 @Component({
 	selector: 'app-movies',
-	imports: [MaterialModule, CommonModule, Card, ImagePosterPipe, RouterModule],
+	imports: [MaterialModule, CommonModule, Card, ImagePosterPipe, RouterModule, ReactiveFormsModule, Carrousel],
 	template: `
         @let moviesPopulars = store.popularMovies();
+        @let moviesSearch = store.searchMovies();
         <main class="movies movies--main">
             <mat-toolbar>
                 <button mat-icon-button routerLink="/">
@@ -26,68 +28,61 @@ import { Card } from '../../components/card/card';
                 <div class="movies__search-form-container">
                     <mat-form-field class="movies__search-form-field" appearance="outline">
                         <mat-icon class="movies__search-form-icon" matSuffix color="primary">search</mat-icon>
-                        <input class="movies__search-form-input" matInput placeholder="Search Movies" />
+                        <input
+                            class="movies__search-form-input"
+                            matInput
+                            placeholder="Search Movies"
+                            [formControl]="store.searchControl"
+                            [value]="store.searchControl.value"
+                        />
                     </mat-form-field>
                 </div>
             </section>
 
-
             <section class="movies__swiper">
                 <h2 class="movies__swiper-title"><mat-icon class="" matSuffix>arrow_forward</mat-icon> Popular Movies</h2>
-                <swiper-container [init]="false"
-                    #swiperContainer
-                    autoplay="true"
-                    class="mySwiper"
-                >
+                <app-carrousel [navigation]="false" (onProgress)="handleProgress($event)">
                     @for (movie of moviesPopulars.results; let index = $index; track index) {
-                        <swiper-slide [routerLink]="[movie.id]"
+                        <swiper-slide (click)="navigateToMovie(movie.id)"
                             class="swiper-slide">
                             <img [src]="movie.poster_path | imagePoster: 'w500'" alt="" />
                         </swiper-slide>
                     }
-                </swiper-container>
+                </app-carrousel>
             </section>
 
-            <section class="movies__grid">
-                @for (movie of moviesPopulars.results; let index = $index; track index) {
-                    <app-card class="movies__card" [movie]="movie"> </app-card>
-                }
-            </section>
+            @if (store.isLoading()) {
+                <div class="movies__search-loading">
+                    <mat-progress-spinner class="movies__progress" mode="indeterminate"></mat-progress-spinner>
+                </div>
+            }
+
+            @else {
+                <section class="movies__grid">
+                    @for (movie of moviesSearch.results; let index = $index; track index) {
+                        <app-card class="movies__card" [movie]="movie" (movieId)="navigateToMovie($event)"> </app-card>
+                    } @empty {
+                        <p>No movies found</p>
+                    }
+                </section>
+            }
         </main>
     `,
 	styleUrl: './movies.scss',
 	schemas: [CUSTOM_ELEMENTS_SCHEMA],
-	providers: [MoviesStore],
 })
-export default class Movies implements AfterViewInit {
+export default class Movies {
 	readonly store = inject(MoviesStore);
-	$swiperRef = viewChild<ElementRef<SwiperContainer>>('swiperContainer');
+	readonly #router = inject(Router);
 
-	// readonly #counter = signal(1);
+	navigateToMovie(id: number) {
+		this.#router.navigate([`/movies/${id}`]);
+	}
 
-	ngAfterViewInit() {
-		const swiperRef = this.$swiperRef()?.nativeElement;
-		if (!swiperRef) return;
-		swiperRef.initialize();
-
-		swiperRef.navigation = true;
-		swiperRef.pagination = true;
-		swiperRef.autoplay = {
-			delay: 2500,
-			// reverseDirection: true,
-			stopOnLastSlide: false,
-		};
-		swiperRef.animate({
-			duration: 2500,
-		});
-		swiperRef.slidesPerView = 5.5;
-		swiperRef.spaceBetween = 20;
-
-		swiperRef.swiper.on('progress', (_, progress) => {
-			const isLoading = this.store.isLoading();
-			if (progress >= 0.9 && !isLoading) {
-				this.store.loadPopularsPage(this.store.page());
-			}
-		});
+	handleProgress(progress: number) {
+		const isLoading = this.store.isLoading();
+		if (progress >= 0.9 && !isLoading) {
+			this.store.loadPopularsPage(this.store.page());
+		}
 	}
 }

@@ -9,3 +9,10 @@ img {
     height: auto;
     display: block;
 }
+
+.movies__loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
