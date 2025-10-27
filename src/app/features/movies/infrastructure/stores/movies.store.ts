@@ -3,9 +3,10 @@ import { tapResponse } from '@ngrx/operators';
 import { patchState, signalStore, withComputed, withHooks, withMethods, withProps, withState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 
-import { debounceTime, delay, distinctUntilChanged, of, pipe, switchMap, tap } from 'rxjs';
+import { debounceTime, delay, distinctUntilChanged, forkJoin, of, pipe, switchMap, tap } from 'rxjs';
 
 import { FormControl } from '@angular/forms';
+import type { Credits } from '../interfaces/credits.interface';
 import type { Movie, MovieResponse } from '../interfaces/movie.interface';
 import { MOVIEDB_HTTP } from '../providers/movie.provider';
 
@@ -14,6 +15,14 @@ export interface MovieState {
 	results: Movie[];
 	total_pages: number;
 	total_results: number;
+	isLoading: boolean;
+	error: Error | null;
+}
+
+export interface CreditsState {
+	id: number | null;
+	cast: Credits[];
+	crew: Credits[];
 	isLoading: boolean;
 	error: Error | null;
 }
@@ -30,6 +39,7 @@ interface InitialState {
 	movie: Movie | null;
 	isLoadingMovie: boolean; //!TODO: Remove this
 	movieId: number | null; //!TODO: Remove this
+	credits: CreditsState | null;
 }
 
 const initialMovieState: MovieState = {
@@ -41,6 +51,14 @@ const initialMovieState: MovieState = {
 	error: null,
 };
 
+const initialCreditsState: CreditsState = {
+	id: null,
+	cast: [],
+	crew: [],
+	isLoading: false,
+	error: null,
+};
+
 const initialState: InitialState = {
 	isLoading: false,
 	popularMovies: structuredClone(initialMovieState),
@@ -48,6 +66,7 @@ const initialState: InitialState = {
 	topReated: structuredClone(initialMovieState),
 	nowPlaying: structuredClone(initialMovieState),
 	upcoming: structuredClone(initialMovieState),
+	credits: structuredClone(initialCreditsState),
 	page: 1,
 	error: null,
 	movie: null,
@@ -191,14 +210,28 @@ export const MoviesStore = signalStore(
 				.subscribe();
 		},
 
-		loadMovieById: rxMethod<number>(
+		loadMovieDetail: rxMethod<number>(
 			pipe(
-				tap(() => patchState(store, { isLoadingMovie: true })),
-				delay(500),
+				tap(() =>
+					patchState(store, {
+						isLoadingMovie: true,
+						error: null,
+						movie: null,
+						credits: null,
+					}),
+				),
 				switchMap((id: number) => {
-					return store._movieApi.getMovieByIdHttp(id).pipe(
+					return forkJoin({
+						movie: store._movieApi.getMovieByIdHttp(id),
+						credits: store._movieApi.getCredits(id),
+					}).pipe(
 						tapResponse({
-							next: (movie: Movie) => patchState(store, { movie }),
+							next: ({ movie, credits }) => {
+								patchState(store, {
+									movie: { ...movie },
+									credits: { ...credits, isLoading: false, error: null },
+								});
+							},
 							error: (error: Error) => patchState(store, { error }),
 							complete: () => patchState(store, { isLoadingMovie: false }),
 						}),
@@ -223,6 +256,7 @@ export const MoviesStore = signalStore(
 			store.loadTopRated.destroy();
 			store.loadNowPlaying.destroy();
 			store.loadUpcoming.destroy();
+			store.loadMovieDetail.destroy();
 		},
 	})),
 );

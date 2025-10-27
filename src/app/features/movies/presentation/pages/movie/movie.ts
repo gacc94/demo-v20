@@ -1,16 +1,17 @@
 import { ImagePosterPipe } from '@/app/shared/pipes/image-poster-pipe';
 import { TransitionNamePipe } from '@/app/shared/pipes/transition-name-pipe';
 import { MaterialModule } from '@/app/shared/utils/material.module';
-import { Component, inject, input } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, input } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { MoviesStore } from '../../../infrastructure/stores/movies.store';
+import { Carrousel } from '../../components/carrousel/carrousel';
 
 @Component({
 	selector: 'app-movie',
-	imports: [ImagePosterPipe, TransitionNamePipe, MaterialModule, RouterModule],
+	imports: [ImagePosterPipe, TransitionNamePipe, MaterialModule, RouterModule, Carrousel],
 	template: `
         @let movie = store.movie();
-         <mat-toolbar>
+        <mat-toolbar>
             <button mat-icon-button (click)="back()">
                 <mat-icon class="mat-24">arrow_back</mat-icon>
             </button>
@@ -19,27 +20,44 @@ import { MoviesStore } from '../../../infrastructure/stores/movies.store';
 
         @if (store.isLoadingMovie()) {
             <div class="movies__loading">
-                <mat-progress-spinner class="movies__progress" mode="indeterminate" ></mat-progress-spinner>
+                <mat-progress-spinner class="movies__progress" mode="indeterminate"></mat-progress-spinner>
             </div>
-        } @else {
-            <section class="section">
-            <div class="movie-header">
-                <h1 class="movie-title">Movie Details</h1>
-                <p class="movie-id">ID: {{ $movieId() }}</p>
-            </div>
-
-            @if (movie) {
-                <img
-                    [src]="movie?.backdrop_path | imagePoster: 'w500'"
-                    [alt]="movie?.title" class="poster-image"
-                    [style.view-transition-name]="movie.title | transitionName: movie.id.toString()"
-                />
-            }
-        </section>
         }
 
+        @if (!store.isLoadingMovie()) {
+            <section class="section">
+                <div class="movie-header">
+                    <h1 class="movie-title">Movie Details</h1>
+                    <p class="movie-id">ID: {{ $movieId() }}</p>
+                </div>
 
+                @if (movie) {
+                    <img
+                        [src]="movie?.backdrop_path | imagePoster: 'w500'"
+                        [alt]="movie?.title"
+                        class="poster-image"
+                        [style.view-transition-name]="movie.title | transitionName: movie.id.toString()"
+                    />
+                }
+
+                <h2>Credits</h2>
+                <div class="credits__cast">
+                    <app-carrousel>
+                        @for (credit of store.credits()?.cast; track $index) {
+                            <swiper-slide class="swiper-slide">
+                                <div class="credits__cast-item">
+                                    <img [src]="credit.profile_path! | imagePoster: 'w500'" [alt]="credit.name" />
+                                    <p>{{ credit.name }}</p>
+                                    <p>{{ credit.character }}</p>
+                                </div>
+                            </swiper-slide>
+                        }
+                    </app-carrousel>
+                </div>
+            </section>
+        }
     `,
+	schemas: [CUSTOM_ELEMENTS_SCHEMA],
 	styleUrl: './movie.scss',
 })
 export default class Movie {
@@ -48,7 +66,7 @@ export default class Movie {
 	readonly #router = inject(Router);
 
 	ngOnInit() {
-		this.store.loadMovieById(this.$movieId());
+		this.store.loadMovieDetail(this.$movieId());
 	}
 
 	back() {

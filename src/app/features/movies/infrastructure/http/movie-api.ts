@@ -3,6 +3,7 @@ import { HttpClient, httpResource } from '@angular/common/http';
 import { inject, type Signal } from '@angular/core';
 import type { Observable } from 'rxjs';
 import type { MovieApiPort } from '../../domain/port/movie-api.port';
+import type { MovieCreditsResponse } from '../interfaces/credits.interface';
 import type { Movie, MovieResponse } from '../interfaces/movie.interface';
 
 export class MovieApi implements MovieApiPort {
@@ -97,6 +98,16 @@ export class MovieApi implements MovieApiPort {
 			params: {
 				language: 'en-US',
 				page: page,
+				region: 'US',
+			},
+		});
+	}
+
+	getCredits(id: number): Observable<MovieCreditsResponse> {
+		return this.#http.get<MovieCreditsResponse>(`${this.#apiUrl.endpoints.details}/${id}/credits`, {
+			headers: { Authorization: `Bearer ${this.#apiUrl.apiKey}` },
+			params: {
+				language: 'en-US',
 				region: 'US',
 			},
 		});
