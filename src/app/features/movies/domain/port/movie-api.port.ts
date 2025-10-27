@@ -7,6 +7,9 @@ export interface MovieApiPort {
 	getPopulars(page?: Signal<number>): HttpResourceRef<MovieResponse | undefined>;
 	getMovieById(id: Signal<number>): HttpResourceRef<Movie | undefined>;
 	getPopularsPage(page: number): Observable<MovieResponse>;
-	searchMovies(query: string): Observable<MovieResponse>;
+	searchMovies(query: string, page: number): Observable<MovieResponse>;
 	getMovieByIdHttp: (id: number) => Observable<Movie>;
+	getTopRated(page: number): Observable<MovieResponse>;
+	getNowPlaying(page: number): Observable<MovieResponse>;
+	getUpcoming(page: number): Observable<MovieResponse>;
 }

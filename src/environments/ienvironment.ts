@@ -2,10 +2,15 @@ export interface Environment {
 	name: string;
 	production: boolean;
 	apis: {
-		[key: string]: {
-			apiKey?: string;
+		moviedb: {
+			apiKey: string;
 			endpoints: {
-				[key: string]: string;
+				details: string;
+				popular: string;
+				search: string;
+				topRated: string;
+				nowPlaying: string;
+				upcoming: string;
 			};
 		};
 	};
