@@ -1,3 +1,4 @@
+import { Skeleton } from '@/app/shared/directives/skeleton';
 import { ImagePosterPipe } from '@/app/shared/pipes/image-poster-pipe';
 import { MaterialModule } from '@/app/shared/utils/material.module';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
@@ -7,15 +8,35 @@ import { Carrousel } from '../carrousel/carrousel';
 
 @Component({
     selector: 'app-tab-movies-content',
-    imports: [MaterialModule, Carrousel, ImagePosterPipe],
+    imports: [MaterialModule, Carrousel, ImagePosterPipe, Skeleton],
     template: `
-        @let moviesPopulars = store.popularMovies();
+        @let moviesPopulars = store.popular();
         @let moviesTopRated = store.topReated();
         @let moviesNowPlaying = store.nowPlaying();
         @let moviesUpcoming = store.upcoming();
 
         <section class="movies__swiper">
             <h2 class="movies__swiper-title"><mat-icon class="" matSuffix>arrow_forward</mat-icon> Popular Movies</h2>
+            @if (moviesPopulars.isLoading) {
+                <app-carrousel>
+                    @for (credit of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; track $index) {
+                        <swiper-slide class="swiper-slide">
+                            <div
+                                skeleton
+                                [isLoading]="true"
+                                [skeletonType]="'wave'"
+                                [skeletonLines]="2"
+                                [skeletonHeight]="'15rem'"
+                                [skeletonWidth]="'100%'"
+                                [skeletonBorderRadius]="'6px'"
+                                [skeletonAnimationDuration]="'1.2s'"
+                                [skeletonGradient]="true"
+                                [skeletonShape]="'rect'"
+                            ></div>
+                        </swiper-slide>
+                    }
+                </app-carrousel>
+            }
             <app-carrousel [navigation]="false" (onProgress)="handleProgressPopulars($event)">
                 @for (movie of moviesPopulars.results; let index = $index; track index) {
                     <swiper-slide (click)="navigateToMovie(movie.id)" class="swiper-slide">
@@ -68,7 +89,7 @@ export class TabMoviesContent {
     handleProgressPopulars(progress: number) {
         const isLoading = this.store.isLoading();
         if (progress >= 0.85 && !isLoading) {
-            this.store.loadPopularsPage(this.store.page());
+            this.store.loadPopular(this.store.popular.page());
         }
     }
 

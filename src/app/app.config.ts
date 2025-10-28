@@ -8,10 +8,14 @@ import {
 import { provideRouter, withComponentInputBinding, withViewTransitions } from '@angular/router';
 
 import { routes } from './app.routes';
-import { MoviesStore } from './features/movies/infrastructure/stores/movies.store';
+
+import { provideAppInitializer } from '@angular/core';
 
 export const appConfig: ApplicationConfig = {
     providers: [
+        provideAppInitializer(() => {
+            // inject(MoviesStore);
+        }),
         provideBrowserGlobalErrorListeners(),
         provideZonelessChangeDetection(),
         provideRouter(
@@ -21,7 +25,7 @@ export const appConfig: ApplicationConfig = {
                 skipInitialTransition: true,
             }),
         ),
-        importProvidersFrom(MoviesStore),
+        importProvidersFrom(),
         provideHttpClient(withFetch()),
     ],
 };

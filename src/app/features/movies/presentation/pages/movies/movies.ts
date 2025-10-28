@@ -3,17 +3,18 @@ import { Component, inject } from '@angular/core';
 import { MaterialModule } from '@/app/shared/utils/material.module';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { MoviesStore } from '../../../infrastructure/stores/movies.store';
 import { TabMoviesContent } from '../../components/tab-movies-content/tab-movies-content';
 import { TabSearchContent } from '../../components/tab-search-content/tab-search-content';
 
 @Component({
     selector: 'app-movies',
-    imports: [MaterialModule, CommonModule, ReactiveFormsModule, TabSearchContent, TabMoviesContent],
+    imports: [MaterialModule, CommonModule, ReactiveFormsModule, TabSearchContent, TabMoviesContent, RouterLink],
     template: `
         <main class="movies movies--main">
             <mat-toolbar>
-                <button mat-icon-button routerLink="/">
+                <button mat-icon-button [routerLink]="['/']" (click)="store.clearStorage()">
                     <mat-icon class="mat-24">arrow_back</mat-icon>
                 </button>
                 <span>Movies</span>
@@ -38,7 +39,12 @@ import { TabSearchContent } from '../../components/tab-search-content/tab-search
             </section>
 
             <section class="movies__tabs">
-                <mat-tab-group mat-align-tabs="center" [selectedIndex]="store.selectedTabIndex()" [preserveContent]="true">
+                <mat-tab-group
+                    mat-align-tabs="center"
+                    [selectedIndex]="store.selectedTabIndex()"
+                    (selectedIndexChange)="store.setSelectedTabIndex($event)"
+                    [preserveContent]="true"
+                >
                     <mat-tab label="Movies">
                         <app-tab-movies-content />
                     </mat-tab>

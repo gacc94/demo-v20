@@ -1,3 +1,4 @@
+import { withDevtools, withSessionStorage, withStorageSync } from '@angular-architects/ngrx-toolkit';
 import { inject } from '@angular/core';
 import { tapResponse } from '@ngrx/operators';
 import { patchState, signalStore, withComputed, withHooks, withMethods, withProps, withState } from '@ngrx/signals';
@@ -29,7 +30,7 @@ export interface CreditsState {
 
 interface InitialState {
     isLoading: boolean;
-    popularMovies: MovieState;
+    popular: MovieState;
     searchMovies: MovieState;
     topReated: MovieState;
     nowPlaying: MovieState;
@@ -62,7 +63,7 @@ const initialCreditsState: CreditsState = {
 
 const initialState: InitialState = {
     isLoading: false,
-    popularMovies: structuredClone(initialMovieState),
+    popular: structuredClone(initialMovieState),
     searchMovies: structuredClone(initialMovieState),
     topReated: structuredClone(initialMovieState),
     nowPlaying: structuredClone(initialMovieState),
@@ -78,32 +79,70 @@ const initialState: InitialState = {
 
 export const MoviesStore = signalStore(
     { providedIn: 'root' },
-    withState<InitialState>(initialState),
+    withDevtools('MoviesStore'), // @TODO: only development
+    withState<InitialState>(initialState), // @TODO: WatchState use in initial state
     withProps(() => ({
         _movieApi: inject(MOVIEDB_HTTP),
         searchControl: new FormControl<string | null>(''),
     })),
-    withComputed(() => ({})),
-    withMethods((store) => ({
-        loadPopularsPage: rxMethod(
+    withStorageSync(
+        {
+            key: 'popular',
+            select: (state: InitialState) => state.popular,
+        },
+        withSessionStorage(),
+    ),
+    withStorageSync(
+        {
+            key: 'topReated',
+            select: (state: InitialState) => state.topReated,
+        },
+        withSessionStorage(),
+    ),
+    withStorageSync(
+        {
+            key: 'nowPlaying',
+            select: (state: InitialState) => state.nowPlaying,
+        },
+        withSessionStorage(),
+    ),
+    withStorageSync(
+        {
+            key: 'upcoming',
+            select: (state: InitialState) => state.upcoming,
+        },
+        withSessionStorage(),
+    ),
+    withComputed(() => ({})), //TODO: WithComputed use in computed
+    withMethods((store, _service = inject(MOVIEDB_HTTP)) => ({
+        loadPopular: rxMethod<number>(
             pipe(
-                debounceTime(500),
-                distinctUntilChanged(),
-                tap(() => patchState(store, { isLoading: true })),
-                switchMap(() => {
-                    return store._movieApi.getPopularsPage(store.page()).pipe(
+                tap(() =>
+                    patchState(store, {
+                        popular: { ...store.popular(), isLoading: true },
+                    }),
+                ),
+                delay(5000),
+                switchMap((page) => {
+                    return _service.getPopularsPage(page).pipe(
                         tapResponse({
                             next: (moviePopular: MovieResponse) =>
                                 patchState(store, {
-                                    popularMovies: {
-                                        ...store.popularMovies(),
+                                    popular: {
+                                        ...store.popular(),
                                         ...moviePopular,
-                                        results: store.popularMovies().results.concat(moviePopular.results),
+                                        results: store.popular().results.concat(moviePopular.results),
+                                        page: page + 1,
                                     },
-                                    page: store.page() + 1,
                                 }),
-                            error: (error: Error) => patchState(store, { error }),
-                            complete: () => patchState(store, { isLoading: false }),
+                            error: (error: Error) =>
+                                patchState(store, {
+                                    popular: { ...store.popular(), error },
+                                }),
+                            complete: () =>
+                                patchState(store, {
+                                    popular: { ...store.popular(), isLoading: false },
+                                }),
                         }),
                     );
                 }),
@@ -112,9 +151,11 @@ export const MoviesStore = signalStore(
 
         loadTopRated: rxMethod<number>(
             pipe(
-                debounceTime(500),
-                distinctUntilChanged(),
-                tap(() => patchState(store, { topReated: { ...store.topReated(), isLoading: true } })),
+                tap(() =>
+                    patchState(store, {
+                        topReated: { ...store.topReated(), isLoading: true },
+                    }),
+                ),
                 switchMap((page) => {
                     return store._movieApi.getTopRated(page).pipe(
                         tapResponse({
@@ -127,8 +168,14 @@ export const MoviesStore = signalStore(
                                         page: page + 1,
                                     },
                                 }),
-                            error: (error: Error) => patchState(store, { topReated: { ...store.topReated(), error } }),
-                            complete: () => patchState(store, { topReated: { ...store.topReated(), isLoading: false } }),
+                            error: (error: Error) =>
+                                patchState(store, {
+                                    topReated: { ...store.topReated(), error },
+                                }),
+                            complete: () =>
+                                patchState(store, {
+                                    topReated: { ...store.topReated(), isLoading: false },
+                                }),
                         }),
                     );
                 }),
@@ -137,9 +184,11 @@ export const MoviesStore = signalStore(
 
         loadNowPlaying: rxMethod<number>(
             pipe(
-                debounceTime(500),
-                distinctUntilChanged(),
-                tap(() => patchState(store, { nowPlaying: { ...store.nowPlaying(), isLoading: true } })),
+                tap(() =>
+                    patchState(store, {
+                        nowPlaying: { ...store.nowPlaying(), isLoading: true },
+                    }),
+                ),
                 switchMap((page) => {
                     return store._movieApi.getNowPlaying(page).pipe(
                         tapResponse({
@@ -152,8 +201,14 @@ export const MoviesStore = signalStore(
                                         page: page + 1,
                                     },
                                 }),
-                            error: (error: Error) => patchState(store, { nowPlaying: { ...store.nowPlaying(), error } }),
-                            complete: () => patchState(store, { nowPlaying: { ...store.nowPlaying(), isLoading: false } }),
+                            error: (error: Error) =>
+                                patchState(store, {
+                                    nowPlaying: { ...store.nowPlaying(), error },
+                                }),
+                            complete: () =>
+                                patchState(store, {
+                                    nowPlaying: { ...store.nowPlaying(), isLoading: false },
+                                }),
                         }),
                     );
                 }),
@@ -162,9 +217,11 @@ export const MoviesStore = signalStore(
 
         loadUpcoming: rxMethod<number>(
             pipe(
-                debounceTime(500),
-                distinctUntilChanged(),
-                tap(() => patchState(store, { upcoming: { ...store.upcoming(), isLoading: true } })),
+                tap(() =>
+                    patchState(store, {
+                        upcoming: { ...store.upcoming(), isLoading: true },
+                    }),
+                ),
                 switchMap((page) => {
                     return store._movieApi.getUpcoming(page).pipe(
                         tapResponse({
@@ -177,8 +234,14 @@ export const MoviesStore = signalStore(
                                         page: page + 1,
                                     },
                                 }),
-                            error: (error: Error) => patchState(store, { upcoming: { ...store.upcoming(), error } }),
-                            complete: () => patchState(store, { upcoming: { ...store.upcoming(), isLoading: false } }),
+                            error: (error: Error) =>
+                                patchState(store, {
+                                    upcoming: { ...store.upcoming(), error },
+                                }),
+                            complete: () =>
+                                patchState(store, {
+                                    upcoming: { ...store.upcoming(), isLoading: false },
+                                }),
                         }),
                     );
                 }),
@@ -190,10 +253,16 @@ export const MoviesStore = signalStore(
                 .pipe(
                     debounceTime(1000),
                     distinctUntilChanged(),
-                    tap(() => patchState(store, { isLoading: true })),
+                    tap(() =>
+                        patchState(store, {
+                            searchMovies: { ...store.searchMovies(), isLoading: true },
+                        }),
+                    ),
                     switchMap((value) => {
                         if (!value) {
-                            patchState(store, { searchMovies: { ...store.searchMovies() }, isLoading: false });
+                            patchState(store, {
+                                searchMovies: { ...store.searchMovies(), isLoading: false, results: [] },
+                            });
                             return of(null);
                         }
                         return store._movieApi.searchMovies(value, 1).pipe(
@@ -201,10 +270,20 @@ export const MoviesStore = signalStore(
                             tapResponse({
                                 next: (searchMoviesRes) =>
                                     patchState(store, {
-                                        searchMovies: { ...searchMoviesRes, isLoading: false, error: null },
+                                        searchMovies: {
+                                            ...searchMoviesRes,
+                                            isLoading: false,
+                                            error: null,
+                                        },
                                     }),
-                                error: (error: Error) => patchState(store, { error }),
-                                complete: () => patchState(store, { isLoading: false }),
+                                error: (error: Error) =>
+                                    patchState(store, {
+                                        searchMovies: { ...store.searchMovies(), error },
+                                    }),
+                                complete: () =>
+                                    patchState(store, {
+                                        searchMovies: { ...store.searchMovies(), isLoading: false },
+                                    }),
                             }),
                         );
                     }),
@@ -231,11 +310,15 @@ export const MoviesStore = signalStore(
                         tapResponse({
                             next: ({ movie, credits }) => {
                                 patchState(store, {
-                                    movie: { ...movie },
-                                    credits: { ...credits, isLoading: false, error: null },
+                                    movie: structuredClone(movie),
+                                    credits: { ...structuredClone(credits), isLoading: false, error: null },
                                 });
                             },
-                            error: (error: Error) => patchState(store, { error }),
+                            error: (error: Error) =>
+                                patchState(store, {
+                                    error,
+                                    isLoadingMovie: false,
+                                }),
                             complete: () => patchState(store, { isLoadingMovie: false }),
                         }),
                     );
@@ -246,10 +329,14 @@ export const MoviesStore = signalStore(
         setSelectedTabIndex: rxMethod<number>(pipe(tap((index) => patchState(store, { selectedTabIndex: index })))),
 
         clearMovie: () => patchState(store, { movie: null, isLoadingMovie: false }),
+
+        clearStorage: () => {
+            store.clearStorage();
+        },
     })),
     withHooks((store) => ({
         onInit: () => {
-            store.loadPopularsPage(store.page());
+            store.loadPopular(store.popular.page());
             store.loadTopRated(store.topReated.page());
             store.loadNowPlaying(store.nowPlaying.page());
             store.loadUpcoming(store.upcoming.page());
@@ -257,7 +344,7 @@ export const MoviesStore = signalStore(
         },
         onDestroy: () => {
             console.log('destroy');
-            store.loadPopularsPage.destroy();
+            store.loadPopular.destroy();
             store.loadTopRated.destroy();
             store.loadNowPlaying.destroy();
             store.loadUpcoming.destroy();
