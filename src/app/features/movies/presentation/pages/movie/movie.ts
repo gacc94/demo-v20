@@ -1,3 +1,4 @@
+import { Skeleton } from '@/app/shared/directives/skeleton';
 import { ImagePosterPipe } from '@/app/shared/pipes/image-poster-pipe';
 import { TransitionNamePipe } from '@/app/shared/pipes/transition-name-pipe';
 import { MaterialModule } from '@/app/shared/utils/material.module';
@@ -7,21 +8,96 @@ import { MoviesStore } from '../../../infrastructure/stores/movies.store';
 import { Carrousel } from '../../components/carrousel/carrousel';
 
 @Component({
-	selector: 'app-movie',
-	imports: [ImagePosterPipe, TransitionNamePipe, MaterialModule, RouterModule, Carrousel],
-	template: `
+    selector: 'app-movie',
+    imports: [ImagePosterPipe, TransitionNamePipe, MaterialModule, RouterModule, Carrousel, Skeleton],
+    template: `
         @let movie = store.movie();
         <mat-toolbar>
             <button mat-icon-button (click)="back()">
                 <mat-icon class="mat-24">arrow_back</mat-icon>
             </button>
-            <span>{{ movie?.title }}</span>
+            @if (store.isLoadingMovie()) {
+                <div
+                    skeleton
+                    [isLoading]="true"
+                    [skeletonType]="'wave'"
+                    [skeletonLines]="1"
+                    [skeletonHeight]="'35px'"
+                    [skeletonWidth]="'100%'"
+                    [skeletonBorderRadius]="'6px'"
+                    [skeletonAnimationDuration]="'1.2s'"
+                    [skeletonGradient]="true"
+                    [skeletonShape]="'rect'"
+                ></div>
+            } @else {
+                <span>{{ movie?.title }}</span>
+            }
         </mat-toolbar>
 
         @if (store.isLoadingMovie()) {
-            <div class="movies__loading">
-                <mat-progress-spinner class="movies__progress" mode="indeterminate"></mat-progress-spinner>
-            </div>
+            <section class="section">
+                <div
+                    skeleton
+                    [isLoading]="true"
+                    [skeletonType]="'shimmer'"
+                    [skeletonLines]="2"
+                    [skeletonHeight]="'3rem'"
+                    [skeletonWidth]="'100%'"
+                    [skeletonBorderRadius]="'6px'"
+                    [skeletonAnimationDuration]="'1.2s'"
+                    [skeletonGradient]="true"
+                    [skeletonShape]="'rect'"
+                    style="margin-bottom: 1rem;"
+                ></div>
+
+                <div
+                    skeleton
+                    [isLoading]="true"
+                    [skeletonType]="'wave'"
+                    [skeletonLines]="2"
+                    [skeletonHeight]="'45vw'"
+                    [skeletonWidth]="'100%'"
+                    [skeletonBorderRadius]="'6px'"
+                    [skeletonAnimationDuration]="'1.2s'"
+                    [skeletonGradient]="true"
+                    [skeletonShape]="'rect'"
+                    style="margin-bottom: 1rem;"
+                ></div>
+
+                <div
+                    skeleton
+                    [isLoading]="true"
+                    [skeletonType]="'wave'"
+                    [skeletonLines]="2"
+                    [skeletonHeight]="'3rem'"
+                    [skeletonWidth]="'100%'"
+                    [skeletonBorderRadius]="'6px'"
+                    [skeletonAnimationDuration]="'1.2s'"
+                    [skeletonGradient]="true"
+                    [skeletonShape]="'rect'"
+                    style="margin-bottom: 1rem;"
+                ></div>
+
+                <app-carrousel>
+                    @for (credit of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; track $index) {
+                        <swiper-slide class="swiper-slide">
+                            <div
+                                skeleton
+                                [isLoading]="true"
+                                [skeletonType]="'wave'"
+                                [skeletonLines]="2"
+                                [skeletonHeight]="'10rem'"
+                                [skeletonWidth]="'100%'"
+                                [skeletonBorderRadius]="'6px'"
+                                [skeletonAnimationDuration]="'1.2s'"
+                                [skeletonGradient]="true"
+                                [skeletonShape]="'rect'"
+                                style="margin-bottom: 1rem;"
+                            ></div>
+                        </swiper-slide>
+                    }
+                </app-carrousel>
+            </section>
         }
 
         @if (!store.isLoadingMovie()) {
@@ -57,20 +133,20 @@ import { Carrousel } from '../../components/carrousel/carrousel';
             </section>
         }
     `,
-	schemas: [CUSTOM_ELEMENTS_SCHEMA],
-	styleUrl: './movie.scss',
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    styleUrl: './movie.scss',
 })
 export default class Movie {
-	$movieId = input.required<number>({ alias: 'id' });
-	readonly store = inject(MoviesStore);
-	readonly #router = inject(Router);
+    $movieId = input.required<number>({ alias: 'id' });
+    readonly store = inject(MoviesStore);
+    readonly #router = inject(Router);
 
-	ngOnInit() {
-		this.store.loadMovieDetail(this.$movieId());
-	}
+    ngOnInit() {
+        this.store.loadMovieDetail(this.$movieId());
+    }
 
-	back() {
-		this.#router.navigate(['/movies']);
-		this.store.clearMovie();
-	}
+    back() {
+        this.#router.navigate(['/movies']);
+        // this.store.clearMovie();
+    }
 }

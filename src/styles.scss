@@ -105,3 +105,275 @@ body {
 //         clip-path: circle(150% at 50% 50%); /* Termina como un círculo que cubre toda la pantalla */
 //     }
 // }
+
+// ============================================
+// SKELETON LOADER STYLES - Professional & Advanced
+// ============================================
+
+// CSS Variables for customization
+:root {
+  --skeleton-base-color: #e0e0e0;
+  --skeleton-shine-color: #f5f5f5;
+  --skeleton-dark-color: #d0d0d0;
+  --skeleton-animation-duration: 1.2s;
+  --skeleton-border-radius: 4px;
+}
+
+// Dark mode support
+// @media (prefers-color-scheme: dark) {
+//   :root {
+//     --skeleton-base-color: #2a2a2a;
+//     --skeleton-shine-color: #3a3a3a;
+//     --skeleton-dark-color: #1a1a1a;
+//   }
+// }
+
+// Base skeleton styles
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--skeleton-base-color);
+  pointer-events: none;
+  user-select: none;
+
+  // Smooth transitions
+  transition: all 0.3s ease-in-out;
+
+  // Hide text content while loading
+  &-active {
+    color: transparent !important;
+
+    // Hide all child elements
+    * {
+      visibility: hidden;
+    }
+  }
+}
+
+// ============================================
+// ANIMATION TYPES
+// ============================================
+
+// 1. Shimmer Animation (default)
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base-color) 0%,
+    var(--skeleton-shine-color) 20%,
+    var(--skeleton-base-color) 40%,
+    var(--skeleton-base-color) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer var(--skeleton-animation-duration) ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+// 2. Pulse Animation
+.skeleton-pulse {
+  animation: pulse var(--skeleton-animation-duration) cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+// 3. Wave Animation
+.skeleton-wave {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--skeleton-shine-color),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: wave var(--skeleton-animation-duration) ease-in-out infinite;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--skeleton-base-color);
+    z-index: -1;
+  }
+}
+
+@keyframes wave {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+// ============================================
+// SHAPE TYPES
+// ============================================
+
+// Rectangle (default)
+.skeleton-rect {
+  border-radius: var(--skeleton-border-radius);
+  min-height: 20px;
+}
+
+// Circle
+.skeleton-circle {
+  border-radius: 50%;
+  aspect-ratio: 1;
+}
+
+// Text
+.skeleton-text {
+  border-radius: 4px;
+  height: 1em;
+  margin-bottom: 0.5em;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// ============================================
+// SKELETON LINES CONTAINER
+// ============================================
+
+.skeleton-lines-container {
+  width: 100%;
+
+  .skeleton-line {
+    height: 1em;
+    background: linear-gradient(
+      90deg,
+      var(--skeleton-base-color) 0%,
+      var(--skeleton-shine-color) 20%,
+      var(--skeleton-base-color) 40%,
+      var(--skeleton-base-color) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer var(--skeleton-animation-duration) ease-in-out infinite;
+    border-radius: 4px;
+    margin-bottom: 0.5em;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// ============================================
+// LEGACY SUPPORT (backward compatibility)
+// ============================================
+
+.skeleton-box {
+  background-color: var(--skeleton-base-color);
+  background-image: linear-gradient(
+    to right,
+    var(--skeleton-base-color) 0%,
+    var(--skeleton-dark-color) 20%,
+    var(--skeleton-base-color) 40%,
+    var(--skeleton-base-color) 100%
+  );
+  background-repeat: no-repeat;
+  background-size: 800px 104px;
+  animation: shimmer-legacy 1.2s infinite linear;
+}
+
+@keyframes shimmer-legacy {
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+}
+
+.pulse {
+  animation: pulse 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation-delay: 0.5s;
+}
+
+// ============================================
+// UTILITY CLASSES
+// ============================================
+
+// Skeleton variants for common use cases
+.skeleton-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.skeleton-title {
+  height: 24px;
+  width: 60%;
+  margin-bottom: 12px;
+  border-radius: 4px;
+}
+
+.skeleton-paragraph {
+  height: 16px;
+  width: 100%;
+  margin-bottom: 8px;
+  border-radius: 4px;
+
+  &:last-child {
+    width: 80%;
+  }
+}
+
+.skeleton-button {
+  height: 36px;
+  width: 120px;
+  border-radius: 4px;
+}
+
+.skeleton-card {
+  padding: 16px;
+  border-radius: 8px;
+  background-color: var(--skeleton-base-color);
+}
+
+.skeleton-image {
+  width: 100%;
+  height: 200px;
+  border-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base-color) 0%,
+    var(--skeleton-shine-color) 20%,
+    var(--skeleton-base-color) 40%,
+    var(--skeleton-base-color) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer var(--skeleton-animation-duration) ease-in-out infinite;
+}
+
+// ============================================
+// RESPONSIVE ADJUSTMENTS
+// ============================================
+
+@media (max-width: 768px) {
+  .skeleton-title {
+    width: 80%;
+  }
+
+  .skeleton-paragraph {
+    width: 100%;
+  }
+}
