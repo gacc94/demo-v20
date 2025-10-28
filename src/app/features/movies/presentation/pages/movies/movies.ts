@@ -1,24 +1,16 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import { Component, inject } from '@angular/core';
 
-import { ImagePosterPipe } from '@/app/shared/pipes/image-poster-pipe';
 import { MaterialModule } from '@/app/shared/utils/material.module';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MoviesStore } from '../../../infrastructure/stores/movies.store';
-import { Card } from '../../components/card/card';
-import { Carrousel } from '../../components/carrousel/carrousel';
+import { TabMoviesContent } from '../../components/tab-movies-content/tab-movies-content';
+import { TabSearchContent } from '../../components/tab-search-content/tab-search-content';
 
 @Component({
     selector: 'app-movies',
-    imports: [MaterialModule, CommonModule, Card, ImagePosterPipe, RouterModule, ReactiveFormsModule, Carrousel],
+    imports: [MaterialModule, CommonModule, ReactiveFormsModule, TabSearchContent, TabMoviesContent],
     template: `
-        @let moviesPopulars = store.popularMovies();
-        @let moviesSearch = store.searchMovies();
-        @let moviesTopRated = store.topReated();
-        @let moviesNowPlaying = store.nowPlaying();
-        @let moviesUpcoming = store.upcoming();
-
         <main class="movies movies--main">
             <mat-toolbar>
                 <button mat-icon-button routerLink="/">
@@ -38,107 +30,27 @@ import { Carrousel } from '../../components/carrousel/carrousel';
                             placeholder="Search Movies"
                             [formControl]="store.searchControl"
                             [value]="store.searchControl.value"
+                            (input)="store.setSelectedTabIndex(1)"
+                            (change)="store.setSelectedTabIndex(1)"
                         />
                     </mat-form-field>
                 </div>
             </section>
 
-            <section class="movies__swiper">
-                <h2 class="movies__swiper-title"><mat-icon class="" matSuffix>arrow_forward</mat-icon> Popular Movies</h2>
-                <app-carrousel [navigation]="false" (onProgress)="handleProgressPopulars($event)">
-                    @for (movie of moviesPopulars.results; let index = $index; track index) {
-                        <swiper-slide (click)="navigateToMovie(movie.id)" class="swiper-slide">
-                            <img [src]="movie.poster_path | imagePoster: 'w500'" alt="" />
-                        </swiper-slide>
-                    }
-                </app-carrousel>
+            <section class="movies__tabs">
+                <mat-tab-group mat-align-tabs="center" [selectedIndex]="store.selectedTabIndex()" [preserveContent]="true">
+                    <mat-tab label="Movies">
+                        <app-tab-movies-content />
+                    </mat-tab>
+                    <mat-tab label="Search">
+                        <app-tab-search-content />
+                    </mat-tab>
+                </mat-tab-group>
             </section>
-
-            <section class="movies__swiper">
-                <h2 class="movies__swiper-title"><mat-icon class="" matSuffix>arrow_forward</mat-icon> Top Rated Movies</h2>
-                <app-carrousel [navigation]="false" (onProgress)="handleProgressTopRated($event)">
-                    @for (movie of moviesTopRated.results; let index = $index; track index) {
-                        <swiper-slide (click)="navigateToMovie(movie.id)" class="swiper-slide">
-                            <img [src]="movie.poster_path | imagePoster: 'w500'" [alt]="movie.title" />
-                        </swiper-slide>
-                    }
-                </app-carrousel>
-            </section>
-
-            <section class="movies__swiper">
-                <h2 class="movies__swiper-title"><mat-icon class="" matSuffix>arrow_forward</mat-icon> Now Playing Movies</h2>
-                <app-carrousel [navigation]="false" (onProgress)="handleProgressNowPlaying($event)">
-                    @for (movie of moviesNowPlaying.results; let index = $index; track index) {
-                        <swiper-slide (click)="navigateToMovie(movie.id)" class="swiper-slide">
-                            <img [src]="movie.poster_path | imagePoster: 'w500'" [alt]="movie.title" />
-                        </swiper-slide>
-                    }
-                </app-carrousel>
-            </section>
-
-            <section class="movies__swiper">
-                <h2 class="movies__swiper-title"><mat-icon class="" matSuffix>arrow_forward</mat-icon> Upcoming Movies</h2>
-                <app-carrousel [navigation]="false" (onProgress)="handleProgressUpcoming($event)">
-                    @for (movie of moviesUpcoming.results; let index = $index; track index) {
-                        <swiper-slide (click)="navigateToMovie(movie.id)" class="swiper-slide">
-                            <img [src]="movie.poster_path | imagePoster: 'w500'" [alt]="movie.title" />
-                        </swiper-slide>
-                    }
-                </app-carrousel>
-            </section>
-
-            @if (store.isLoading()) {
-                <div class="movies__search-loading">
-                    <mat-progress-spinner class="movies__progress" mode="indeterminate"></mat-progress-spinner>
-                </div>
-
-            } @else {
-                <section class="movies__grid">
-                    @for (movie of moviesSearch.results; let index = $index; track index) {
-                        <app-card class="movies__card" [movie]="movie" (movieId)="navigateToMovie($event)"> </app-card>
-                    } @empty {
-                        <p>No movies found</p>
-                    }
-                </section>
-            }
         </main>
     `,
     styleUrl: './movies.scss',
-    schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export default class Movies {
-    readonly store = inject(MoviesStore);
-    readonly #router = inject(Router);
-
-    navigateToMovie(id: number) {
-        this.#router.navigate([`/movies/${id}`]);
-    }
-
-    handleProgressPopulars(progress: number) {
-        const isLoading = this.store.isLoading();
-        if (progress >= 0.85 && !isLoading) {
-            this.store.loadPopularsPage(this.store.page());
-        }
-    }
-
-    handleProgressTopRated(progress: number) {
-        const isLoading = this.store.isLoading();
-        if (progress >= 0.85 && !isLoading) {
-            this.store.loadTopRated(this.store.topReated.page());
-        }
-    }
-
-    handleProgressNowPlaying(progress: number) {
-        const isLoading = this.store.isLoading();
-        if (progress >= 0.85 && !isLoading) {
-            this.store.loadNowPlaying(this.store.nowPlaying.page());
-        }
-    }
-
-    handleProgressUpcoming(progress: number) {
-        const isLoading = this.store.isLoading();
-        if (progress >= 0.85 && !isLoading) {
-            this.store.loadUpcoming(this.store.upcoming.page());
-        }
-    }
+    protected readonly store = inject(MoviesStore);
 }

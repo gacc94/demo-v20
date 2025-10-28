@@ -7,14 +7,16 @@ import { MaterialModule } from '@/app/shared/utils/material.module';
 import type { Movie } from '../../../infrastructure/interfaces/movie.interface';
 
 @Component({
-	selector: 'app-card',
-	imports: [MaterialModule, ImagePosterPipe, RouterModule, TransitionNamePipe],
-	template: `
+    selector: 'app-card',
+    imports: [MaterialModule, ImagePosterPipe, RouterModule, TransitionNamePipe],
+    template: `
         @let movie = $movie();
-        <mat-card (click)="onMovieId.emit(movie.id)">
-            <img matCardImage
+        <mat-card (click)="$onMovieId.emit(movie.id)">
+            <img
+                matCardImage
                 [src]="movie.poster_path | imagePoster: 'w500'"
-                [alt]="movie.title" loading="lazy"
+                [alt]="movie.title"
+                loading="lazy"
                 [style.view-transition-name]="movie.title | transitionName: movie.id.toString()"
             />
 
@@ -24,10 +26,10 @@ import type { Movie } from '../../../infrastructure/interfaces/movie.interface';
             </mat-card-content>
         </mat-card>
     `,
-	styleUrl: './card.scss',
+    styleUrl: './card.scss',
 })
 export class Card {
-	$movie = input.required<Movie>({ alias: 'movie' });
+    $movie = input.required<Movie>({ alias: 'movie' });
 
-	onMovieId = output<number>({ alias: 'movieId' });
+    $onMovieId = output<number>({ alias: 'movieId' });
 }

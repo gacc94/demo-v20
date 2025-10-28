@@ -24,17 +24,12 @@
         gap: 1rem;
     }
 
-    &__swiper {
+    &__tabs {
         max-width: 1000px;
         margin-inline: auto;
-        padding: 1rem;
-
-        &-title {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
+        padding-inline: 1rem;
     }
+
 }
 
 swiper-slide {

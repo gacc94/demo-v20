@@ -40,6 +40,7 @@ interface InitialState {
     isLoadingMovie: boolean; //!TODO: Remove this
     movieId: number | null; //!TODO: Remove this
     credits: CreditsState | null;
+    selectedTabIndex: number;
 }
 
 const initialMovieState: MovieState = {
@@ -72,6 +73,7 @@ const initialState: InitialState = {
     movie: null,
     isLoadingMovie: false,
     movieId: null,
+    selectedTabIndex: 0,
 };
 
 export const MoviesStore = signalStore(
@@ -240,6 +242,8 @@ export const MoviesStore = signalStore(
                 }),
             ),
         ),
+
+        setSelectedTabIndex: rxMethod<number>(pipe(tap((index) => patchState(store, { selectedTabIndex: index })))),
 
         clearMovie: () => patchState(store, { movie: null, isLoadingMovie: false }),
     })),
