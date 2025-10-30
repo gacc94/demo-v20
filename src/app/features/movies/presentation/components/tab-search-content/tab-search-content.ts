@@ -29,13 +29,19 @@ import { Card } from '../card/card';
         }
 
         @if (!moviesSearch.isLoading) {
-            <section class="tab-search-content__grid">
-                @for (movie of moviesSearch.results; let index = $index; track index) {
-                    <app-card class="tab-search-content__card" [movie]="movie" (movieId)="navigateToMovie($event)"> </app-card>
-                } @empty {
-                    <p>No movies found</p>
-                }
-            </section>
+            @if (moviesSearch.results.length > 0) {
+                <section class="tab-search-content__grid">
+                    @for (movie of moviesSearch.results; let index = $index; track index) {
+                        <app-card class="tab-search-content__card" [movie]="movie" (movieId)="navigateToMovie($event)"> </app-card>
+                    }
+                </section>
+            }
+
+            @if (moviesSearch.results.length === 0) {
+                <div class="tab-search-content__empty">
+                    <h2>No movies found</h2>
+                </div>
+            }
         }
     `,
     styleUrl: './tab-search-content.scss',

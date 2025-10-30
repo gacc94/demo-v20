@@ -25,7 +25,6 @@ import { computed, Directive, effect, ElementRef, inject, input, Renderer2, sign
  */
 @Directive({
     selector: '[skeleton]',
-    standalone: true,
     host: {
         '[class.skeleton]': 'true',
         '[class.skeleton-active]': '$isLoading()',

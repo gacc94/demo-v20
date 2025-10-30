@@ -7,9 +7,9 @@ import { MoviesStore } from '../../../infrastructure/stores/movies.store';
 import { Carrousel } from '../carrousel/carrousel';
 
 @Component({
-    selector: 'app-tab-movies-content',
-    imports: [MaterialModule, Carrousel, ImagePosterPipe, Skeleton],
-    template: `
+	selector: 'app-tab-movies-content',
+	imports: [MaterialModule, Carrousel, ImagePosterPipe, Skeleton],
+	template: `
         @let moviesPopulars = store.popular();
         @let moviesTopRated = store.topReated();
         @let moviesNowPlaying = store.nowPlaying();
@@ -79,42 +79,42 @@ import { Carrousel } from '../carrousel/carrousel';
             </app-carrousel>
         </section>
     `,
-    schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    styleUrl: './tab-movies-content.scss',
+	schemas: [CUSTOM_ELEMENTS_SCHEMA],
+	styleUrl: './tab-movies-content.scss',
 })
 export class TabMoviesContent {
-    protected readonly store = inject(MoviesStore);
-    readonly #router = inject(Router);
+	protected readonly store = inject(MoviesStore);
+	readonly #router = inject(Router);
 
-    handleProgressPopulars(progress: number) {
-        const isLoading = this.store.isLoading();
-        if (progress >= 0.85 && !isLoading) {
-            this.store.loadPopular(this.store.popular.page());
-        }
-    }
+	handleProgressPopulars(progress: number) {
+		const isLoading = this.store.isLoading();
+		if (progress >= 0.85 && !isLoading) {
+			this.store.loadPopular(this.store.popular.page());
+		}
+	}
 
-    handleProgressTopRated(progress: number) {
-        const isLoading = this.store.isLoading();
-        if (progress >= 0.85 && !isLoading) {
-            this.store.loadTopRated(this.store.topReated.page());
-        }
-    }
+	handleProgressTopRated(progress: number) {
+		const isLoading = this.store.isLoading();
+		if (progress >= 0.85 && !isLoading) {
+			this.store.loadTopRated(this.store.topReated.page());
+		}
+	}
 
-    handleProgressNowPlaying(progress: number) {
-        const isLoading = this.store.isLoading();
-        if (progress >= 0.85 && !isLoading) {
-            this.store.loadNowPlaying(this.store.nowPlaying.page());
-        }
-    }
+	handleProgressNowPlaying(progress: number) {
+		const isLoading = this.store.isLoading();
+		if (progress >= 0.85 && !isLoading) {
+			this.store.loadNowPlaying(this.store.nowPlaying.page());
+		}
+	}
 
-    handleProgressUpcoming(progress: number) {
-        const isLoading = this.store.isLoading();
-        if (progress >= 0.85 && !isLoading) {
-            this.store.loadUpcoming(this.store.upcoming.page());
-        }
-    }
+	handleProgressUpcoming(progress: number) {
+		const isLoading = this.store.isLoading();
+		if (progress >= 0.85 && !isLoading) {
+			this.store.loadUpcoming(this.store.upcoming.page());
+		}
+	}
 
-    navigateToMovie(id: number) {
-        this.#router.navigate([`/movies/${id}`]);
-    }
+	navigateToMovie(id: number) {
+		this.#router.navigate([`/movies/${id}`]);
+	}
 }

@@ -12,22 +12,22 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 
 @NgModule({
-    declarations: [],
-    imports: [CommonModule],
-    exports: [
-        MatCardModule,
-        MatButtonModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatIconModule,
-        MatToolbarModule,
-        MatProgressSpinnerModule,
-        MatListModule,
-        MatFormFieldModule,
-        MatProgressBarModule,
-        MatProgressSpinnerModule,
-        MatTabsModule,
-    ],
-    providers: [],
+	declarations: [],
+	imports: [CommonModule],
+	exports: [
+		MatCardModule,
+		MatButtonModule,
+		MatFormFieldModule,
+		MatInputModule,
+		MatIconModule,
+		MatToolbarModule,
+		MatProgressSpinnerModule,
+		MatListModule,
+		MatFormFieldModule,
+		MatProgressBarModule,
+		MatProgressSpinnerModule,
+		MatTabsModule,
+	],
+	providers: [],
 })
 export class MaterialModule {}

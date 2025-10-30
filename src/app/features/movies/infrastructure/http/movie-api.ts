@@ -1,6 +1,6 @@
 import { environment } from '@/environments/environment';
-import { HttpClient, httpResource } from '@angular/common/http';
-import { inject, type Signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { inject } from '@angular/core';
 import type { Observable } from 'rxjs';
 import type { MovieApiPort } from '../../domain/port/movie-api.port';
 import type { MovieCreditsResponse } from '../interfaces/credits.interface';
@@ -10,35 +10,8 @@ export class MovieApi implements MovieApiPort {
 	#apiUrl = environment.apis.moviedb;
 	#http = inject(HttpClient);
 
-	getPopulars(page: Signal<number>) {
-		return httpResource<MovieResponse>(() => ({
-			url: this.#apiUrl.endpoints.popular,
-			method: 'GET',
-			headers: { Authorization: `Bearer ${this.#apiUrl.apiKey}` },
-			params: {
-				language: 'en-US',
-				page: page(),
-				region: 'US',
-			},
-		}));
-	}
-
-	getMovieById(id: Signal<number>) {
-		return httpResource<Movie>(() => ({
-			url: `${this.#apiUrl.endpoints.details}/${id()}`,
-			method: 'GET',
-			headers: { Authorization: `Bearer ${this.#apiUrl.apiKey}` },
-			// params: {
-			// 	language: 'en-US',
-			// 	// page: page ?? 1,
-			// 	region: 'US',
-			// },
-		}));
-	}
-
 	getPopularsPage(page: number) {
 		return this.#http.get<MovieResponse>(`${this.#apiUrl.endpoints.popular}`, {
-			headers: { Authorization: `Bearer ${this.#apiUrl.apiKey}` },
 			params: {
 				language: 'en-US',
 				page: page,
@@ -49,7 +22,6 @@ export class MovieApi implements MovieApiPort {
 
 	searchMovies(query: string, page: number): Observable<MovieResponse> {
 		return this.#http.get<MovieResponse>(`${this.#apiUrl.endpoints.search}`, {
-			headers: { Authorization: `Bearer ${this.#apiUrl.apiKey}` },
 			params: {
 				language: 'en-US',
 				query: `${query}`,
@@ -62,7 +34,6 @@ export class MovieApi implements MovieApiPort {
 
 	getMovieByIdHttp(id: number): Observable<Movie> {
 		return this.#http.get<Movie>(`${this.#apiUrl.endpoints.details}/${id}`, {
-			headers: { Authorization: `Bearer ${this.#apiUrl.apiKey}` },
 			params: {
 				language: 'en-US',
 				region: 'US',
@@ -72,7 +43,6 @@ export class MovieApi implements MovieApiPort {
 
 	getTopRated(page: number): Observable<MovieResponse> {
 		return this.#http.get<MovieResponse>(`${this.#apiUrl.endpoints.topRated}`, {
-			headers: { Authorization: `Bearer ${this.#apiUrl.apiKey}` },
 			params: {
 				language: 'en-US',
 				page: page,
@@ -83,7 +53,6 @@ export class MovieApi implements MovieApiPort {
 
 	getNowPlaying(page: number): Observable<MovieResponse> {
 		return this.#http.get<MovieResponse>(`${this.#apiUrl.endpoints.nowPlaying}`, {
-			headers: { Authorization: `Bearer ${this.#apiUrl.apiKey}` },
 			params: {
 				language: 'en-US',
 				page: page,
@@ -94,7 +63,6 @@ export class MovieApi implements MovieApiPort {
 
 	getUpcoming(page: number): Observable<MovieResponse> {
 		return this.#http.get<MovieResponse>(`${this.#apiUrl.endpoints.upcoming}`, {
-			headers: { Authorization: `Bearer ${this.#apiUrl.apiKey}` },
 			params: {
 				language: 'en-US',
 				page: page,
@@ -105,7 +73,6 @@ export class MovieApi implements MovieApiPort {
 
 	getCredits(id: number): Observable<MovieCreditsResponse> {
 		return this.#http.get<MovieCreditsResponse>(`${this.#apiUrl.endpoints.details}/${id}/credits`, {
-			headers: { Authorization: `Bearer ${this.#apiUrl.apiKey}` },
 			params: {
 				language: 'en-US',
 				region: 'US',

@@ -1,7 +1,6 @@
-import { Component, inject } from '@angular/core';
-
 import { MaterialModule } from '@/app/shared/utils/material.module';
 import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MoviesStore } from '../../../infrastructure/stores/movies.store';
@@ -31,8 +30,6 @@ import { TabSearchContent } from '../../components/tab-search-content/tab-search
                             placeholder="Search Movies"
                             [formControl]="store.searchControl"
                             [value]="store.searchControl.value"
-                            (input)="store.setSelectedTabIndex(1)"
-                            (change)="store.setSelectedTabIndex(1)"
                         />
                     </mat-form-field>
                 </div>

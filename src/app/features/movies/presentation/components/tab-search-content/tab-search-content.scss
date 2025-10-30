@@ -23,4 +23,12 @@
     &__card {
         width: 100%;
     }
+
+    &__empty {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 30vh);
+    }
 }

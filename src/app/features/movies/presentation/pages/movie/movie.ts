@@ -8,9 +8,9 @@ import { MoviesStore } from '../../../infrastructure/stores/movies.store';
 import { Carrousel } from '../../components/carrousel/carrousel';
 
 @Component({
-    selector: 'app-movie',
-    imports: [ImagePosterPipe, TransitionNamePipe, MaterialModule, RouterLink, Carrousel, Skeleton],
-    template: `
+	selector: 'app-movie',
+	imports: [ImagePosterPipe, TransitionNamePipe, MaterialModule, RouterLink, Carrousel, Skeleton],
+	template: `
         @let movie = store.movie();
         <mat-toolbar>
             <button mat-icon-button [routerLink]="['/movies']">
@@ -113,14 +113,14 @@ import { Carrousel } from '../../components/carrousel/carrousel';
             </section>
         }
     `,
-    schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    styleUrl: './movie.scss',
+	schemas: [CUSTOM_ELEMENTS_SCHEMA],
+	styleUrl: './movie.scss',
 })
 export default class Movie {
-    $movieId = input.required<number>({ alias: 'id' });
-    readonly store = inject(MoviesStore);
+	$movieId = input.required<number>({ alias: 'id' });
+	readonly store = inject(MoviesStore);
 
-    ngOnInit() {
-        this.store.loadMovieDetail(this.$movieId());
-    }
+	ngOnInit() {
+		this.store.loadMovieDetail(this.$movieId());
+	}
 }

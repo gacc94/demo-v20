@@ -122,7 +122,6 @@ export const MoviesStore = signalStore(
                         popular: { ...store.popular(), isLoading: true },
                     }),
                 ),
-                delay(5000),
                 switchMap((page) => {
                     return _service.getPopularsPage(page).pipe(
                         tapResponse({
@@ -253,11 +252,12 @@ export const MoviesStore = signalStore(
                 .pipe(
                     debounceTime(1000),
                     distinctUntilChanged(),
-                    tap(() =>
+                    tap(() => {
                         patchState(store, {
                             searchMovies: { ...store.searchMovies(), isLoading: true },
-                        }),
-                    ),
+                            selectedTabIndex: 1,
+                        });
+                    }),
                     switchMap((value) => {
                         if (!value) {
                             patchState(store, {
