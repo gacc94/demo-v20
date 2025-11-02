@@ -53,7 +53,15 @@ import { TabSearchContent } from '../../components/tab-search-content/tab-search
         </main>
     `,
     styleUrl: './movies.scss',
+    providers: [MoviesStore],
 })
 export default class Movies {
     protected readonly store = inject(MoviesStore);
+
+    ngOnInit() {
+        this.store.loadPopular(this.store.popular.page());
+        this.store.loadTopRated(this.store.topReated.page());
+        this.store.loadNowPlaying(this.store.nowPlaying.page());
+        this.store.loadUpcoming(this.store.upcoming.page());
+    }
 }

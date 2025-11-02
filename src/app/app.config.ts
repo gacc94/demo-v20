@@ -2,7 +2,6 @@ import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/
 import {
     type ApplicationConfig,
     importProvidersFrom,
-    inject,
     provideBrowserGlobalErrorListeners,
     provideZonelessChangeDetection,
 } from '@angular/core';
@@ -12,12 +11,11 @@ import { routes } from './app.routes';
 import { apiKeyInterceptor } from './core/interceptors/api-key.interceptor';
 
 import { provideAppInitializer } from '@angular/core';
-import { MovieStore } from './features/movies/infrastructure/stores/movie-entity.store';
 
 export const appConfig: ApplicationConfig = {
     providers: [
         provideAppInitializer(() => {
-            inject(MovieStore);
+            // inject(MovieStore);
             // inject(movieStoreWithEntity);
         }),
         provideBrowserGlobalErrorListeners(),

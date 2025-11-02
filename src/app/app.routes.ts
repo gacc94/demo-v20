@@ -1,21 +1,18 @@
 import type { Routes } from '@angular/router';
 
 export const routes: Routes = [
-	{
-		path: '',
-		loadComponent: () => import('./features/home/home'),
-	},
-	{
-		path: 'movies',
-		loadComponent: () => import('./features/movies/presentation/pages/movies/movies'),
-	},
-	{
-		path: 'movies/:id',
-		loadComponent: () => import('./features/movies/presentation/pages/movie/movie'),
-	},
-	{
-		path: '**',
-		redirectTo: '',
-		pathMatch: 'full',
-	},
+    {
+        path: '',
+        loadComponent: () => import('./features/home/home'),
+    },
+    {
+        path: 'movies',
+        loadChildren: () => import('./features/movies/movies.routes'),
+        // providers: [MoviesStore],
+    },
+    {
+        path: '**',
+        redirectTo: '',
+        pathMatch: 'full',
+    },
 ];

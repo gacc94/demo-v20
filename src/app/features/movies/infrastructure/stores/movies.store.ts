@@ -10,6 +10,7 @@ import { FormControl } from '@angular/forms';
 import type { Credits } from '../interfaces/credits.interface';
 import type { Movie, MovieResponse } from '../interfaces/movie.interface';
 import { MOVIEDB_HTTP } from '../providers/movie.provider';
+import { StoreService } from '../services/store.service';
 
 export interface MovieState {
     page: number;
@@ -28,7 +29,7 @@ export interface CreditsState {
     error: Error | null;
 }
 
-interface InitialState {
+export interface InitialState {
     isLoading: boolean;
     popular: MovieState;
     searchMovies: MovieState;
@@ -61,7 +62,7 @@ const initialCreditsState: CreditsState = {
     error: null,
 };
 
-const initialState: InitialState = {
+export const initialState: InitialState = {
     isLoading: false,
     popular: structuredClone(initialMovieState),
     searchMovies: structuredClone(initialMovieState),
@@ -78,11 +79,12 @@ const initialState: InitialState = {
 };
 
 export const MoviesStore = signalStore(
-    { providedIn: 'root' },
+    // { providedIn: 'platform' },
     withDevtools('MoviesStore'), // @TODO: only development
     withState<InitialState>(initialState), // @TODO: WatchState use in initial state
     withProps(() => ({
         _movieApi: inject(MOVIEDB_HTTP),
+        _storeService: inject(StoreService),
         searchControl: new FormControl<string | null>(''),
     })),
     withStorageSync(
@@ -115,38 +117,7 @@ export const MoviesStore = signalStore(
     ),
     withComputed(() => ({})), //TODO: WithComputed use in computed
     withMethods((store, _service = inject(MOVIEDB_HTTP)) => ({
-        loadPopular: rxMethod<number>(
-            pipe(
-                tap(() =>
-                    patchState(store, {
-                        popular: { ...store.popular(), isLoading: true },
-                    }),
-                ),
-                switchMap((page) => {
-                    return _service.getPopularsPage(page).pipe(
-                        tapResponse({
-                            next: (moviePopular: MovieResponse) =>
-                                patchState(store, {
-                                    popular: {
-                                        ...store.popular(),
-                                        ...moviePopular,
-                                        results: store.popular().results.concat(moviePopular.results),
-                                        page: page + 1,
-                                    },
-                                }),
-                            error: (error: Error) =>
-                                patchState(store, {
-                                    popular: { ...store.popular(), error },
-                                }),
-                            complete: () =>
-                                patchState(store, {
-                                    popular: { ...store.popular(), isLoading: false },
-                                }),
-                        }),
-                    );
-                }),
-            ),
-        ),
+        loadPopular: store._storeService.loadPopularFn(store),
 
         loadTopRated: rxMethod<number>(
             pipe(
@@ -336,14 +307,15 @@ export const MoviesStore = signalStore(
     })),
     withHooks((store) => ({
         onInit: () => {
-            store.loadPopular(store.popular.page());
-            store.loadTopRated(store.topReated.page());
-            store.loadNowPlaying(store.nowPlaying.page());
-            store.loadUpcoming(store.upcoming.page());
+            console.log('inti store');
+            // store.loadPopular(store.popular.page());
+            // store.loadTopRated(store.topReated.page());
+            // store.loadNowPlaying(store.nowPlaying.page());
+            // store.loadUpcoming(store.upcoming.page());
             store._searchMovies();
         },
         onDestroy: () => {
-            console.log('destroy');
+            console.log('destroy store');
             store.loadPopular.destroy();
             store.loadTopRated.destroy();
             store.loadNowPlaying.destroy();
